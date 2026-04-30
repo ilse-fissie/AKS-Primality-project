@@ -1,1 +1,1 @@
-def hello := "foo"
+def hello := "food"

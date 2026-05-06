@@ -16,4 +16,6 @@ theorem Theorem1 {R : Type u_1} [CommSemiring R] (n : ℕ)
     have name : Fact (Nat.Prime n) := {out := h}
     rw [add_pow_char x 1]
     simp
-  · sorry
+  · contrapose
+    intro h
+    push Not

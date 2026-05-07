@@ -1,6 +1,15 @@
 /- In this file we will start with the proof of the main theorem
 of the AKS primality test. The main theorem is:
+-/
+structure values where
+  n : ℕ
+  n_geq_two: n ≥ 2
+  r : ℕ
+  r_nonneg : r ≥ 0
+  r_le_n : r ≤ n - 1
+  ordergeq: addOrderOf (n : ZMod r) > (Real.log 10 n)^2
 
+/-
 For given integer n ≥ 2, let r be a positive integer < n, for which
 n has order > (log n)2 modulo r. Then n is prime if and only if
 • n is not a perfect power,

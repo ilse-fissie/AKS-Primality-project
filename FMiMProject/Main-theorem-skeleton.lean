@@ -7,7 +7,7 @@ structure values where
   r : ℕ
   r_nonneg : r ≥ 0
   r_le_n : r ≤ n - 1
-  ordergeq: addOrderOf (n : ZMod r) > (Real.log 10 n)^2
+  --ordergeq: addOrderOf (n : ZMod r) > (Real.logb ↑10 ↑n)^2
 
 /-
 For given integer n ≥ 2, let r be a positive integer < n, for which

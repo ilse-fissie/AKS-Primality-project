@@ -33,9 +33,14 @@ for n
 -- h(X) irriducible factor of Φ_r(X) in (ℤ/pℤ)[X]
 -- 𝔽 :≡ ℤ [X]/(p, h(x)) iso to field of p^m elements
 -- m = deg h, 𝔽 - {0} cyclic group of order p^m -1,
+
+def PolyRing_Z_p_Xr (p: ℕ) (r: ℕ ) [Fact p.prime]  := AdjoinRoot (X^r -1 : (ZMod p)[X])
 --   and r | p^m-1, because x of order r
 
 -- H = ⟨ X, X+1, X+2, ..., X+[A]⟩ / (p, X^r-1)
+
+
+def Set_H (p: ℕ )( A : ℕ) (r :ℕ ): Set ℕ := sorry
 
 -- G = ⟨ X, X+1, X+2, ..., X+[A]⟩ / (p, h(X))
 -- ? = H/ (h(X))

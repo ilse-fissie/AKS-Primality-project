@@ -22,7 +22,7 @@ theorem Theorem1 (n : ℕ) (h_ngone: n > 1) :
     intro h
     push Not
     intro h_not_prime
-    · sorry
+    sorry
 
 
 
@@ -31,5 +31,9 @@ theorem Theorem1 (n : ℕ) (h_ngone: n > 1) :
 --  | []      => []
 
 --Dont forget to implement the order condition: smallest k st n^k mod n = 1
-theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ) (h_ngone: n > 1) (h_r_less_than_n : r < n):
- n.Prime ↔ True := by sorry
+/- ord (n) = n Mod r ∈ ℤ (smallest k ∈ ℕ s.t. ∃ m ∈ ℤ  s.t. n= m·r + k)
+and n Mod r >
+-/
+theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ) (h_ngone: n > 1)
+  (h_r_less_than_n : r < n) (h_order : orderOf (n: ZMod r) > (Real.log n)^2): n.Prime ↔
+  True := by sorry

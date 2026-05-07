@@ -11,6 +11,7 @@ will also need to install the right packages etc.
 open Polynomial
 
 
+
 theorem Theorem1 (n : ℕ) (h_ngone: n > 1) :
  n.Prime ↔ (X+1: (ZMod n)[X])^n = X^n+1 := by
   constructor
@@ -20,9 +21,21 @@ theorem Theorem1 (n : ℕ) (h_ngone: n > 1) :
     simp
   · contrapose
     intro h
+    let p := Nat.minFac n
+    have p_lt : p < n := sorry
+    have p_prime : Nat.Prime p := by
+      apply Nat.minFac_prime
+      grind --you can also use "omega"
     push Not
     intro h_not_prime
+    rw[add_pow] at h_not_prime
+    have := congrArg (fun (f : (ZMod n)[X]) => Polynomial.coeff f p) h_not_prime
+    dsimp at this
+    simp[le_of_lt p_lt, ne_of_lt p_lt] at this
+    rw[Polynomial.coeff_one] at this
+    simp[Nat.Prime.ne_zero p_prime] at this
     sorry
+
 
 
 

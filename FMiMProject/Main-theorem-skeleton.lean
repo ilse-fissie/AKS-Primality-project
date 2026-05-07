@@ -15,15 +15,7 @@ structure values where
   ordergeq: addOrderOf (n : ZMod r) > (Nat.log 10 n)^2
 
 
-/-
-For given integer n ≥ 2, let r be a positive integer < n, for which
-n has order > (log n)2 modulo r. Then n is prime if and only if
-• n is not a perfect power,
-• n does not have any prime factor ≤ r,
-• (x + a)n ≡ xn + a mod (n, xr − 1) for each integer a, 1 ≤ a ≤ √r log n.
-(x + a)^n ≡  x^n + a mod (p, xr − 1)
-for n
--/
+
 
 -- Construction of the set S
 
@@ -39,25 +31,43 @@ for n
 open Polynomial
 
 -- *Why is this type Type?*
-def PolyRing_Z_p_Xr (p: ℕ) (r: ℕ ) [Fact p.Prime]  :=
+abbrev PolyRing_Z_p_Xr (p: ℕ) (r: ℕ ) [Fact p.Prime]  :=
   AdjoinRoot (X^r -1 : (ZMod p)[X])
 
+variable (p: ℕ) (r: ℕ ) (n_A :ℕ ) [Fact p.Prime]
+instance : Algebra ℤ[X] (PolyRing_Z_p_Xr p r) :=
+  sorry
 -- set = ⟨X, X+1, X+2, ..., X+[A]⟩ / (p)
 -- H = ⟨X, X+1, X+2, ..., X+[A]⟩ / (p, X^r-1)
 
 -- *Error?*
--- noncomputable
-def First_Set (p: ℕ )(n_A : ℕ) [Fact p.Prime] :=
-  Subsemigroup.closure {(X+i: (ZMod p)[X])| 0 ≤ i // i ≤ n_A}
+noncomputable def H_Set (p: ℕ )(n_A : ℕ) (r: ℕ) [Fact p.Prime] :
+    Submonoid (PolyRing_Z_p_Xr p r) :=
+  Submonoid.map (algebraMap ℤ[X] (PolyRing_Z_p_Xr p r))
+  (Submonoid.closure ( { (X + C i )| (i :ℤ ) (_ : 0 ≤ i) (_ : i ≤ n_A) }) )
+
+-- add assumptions
+structure irred_factor_cyclo_mod_p   where
+  h:(ZMod p)[X]
+  h_irred : Irreducible h
+  h_factor_cyclo : h ∣ (X^r -1 :(ZMod p)[X] )
+
+variable {p r} in
+abbrev F (h: irred_factor_cyclo_mod_p p r) := AdjoinRoot h.h
+
+variable (h : irred_factor_cyclo_mod_p p r)
+
+noncomputable def map : PolyRing_Z_p_Xr p r →ₐ[ZMod p] F h := AdjoinRoot.liftAlgHom _
+    (Algebra.ofId _ _) (AdjoinRoot.root _) <| by
+
   sorry
+--  G = ⟨ X, X+1, X+2, ..., X+[A]⟩ / (p, h(X))
+--    = H/ (h(X))
+-- *I do not know how to define G, can I use AdjoinRoot? or
+def Set_G_h : Submonoid (F h) :=
+  Submonoid.map _ (H_Set p n_A r)
 
--- *Error?*
-def Set_H (p: ℕ )(n_A : ℕ) (r : ℕ) [Fact p.Prime] :=
-  Set.inter (First_Set p n_A) (PolyRing_Z_p_Xr p r )
 
-def Set_G_h
--- G = ⟨ X, X+1, X+2, ..., X+[A]⟩ / (p, h(X))
--- ? = H/ (h(X))
 -- g ∈ G, g ≠ 0
 -- g(X) = Π _{0 ≤ a ≤ A}(x+a)^{e_a} ∈ H
 -- g(X)^n = g(X^n) mod (p, X^r-1)

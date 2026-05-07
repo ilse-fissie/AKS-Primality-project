@@ -1,3 +1,7 @@
+import Mathlib.Tactic
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.Algebra.Polynomial.Basic
+
 /- In this file we will start with the proof of the main theorem
 of the AKS primality test. The main theorem is:
 -/
@@ -6,8 +10,8 @@ structure values where
   n_geq_two: n ≥ 2
   r : ℕ
   r_nonneg : r ≥ 0
-  r_le_n : r ≤ n - 1
-  --ordergeq: addOrderOf (n : ZMod r) > (Real.logb ↑10 ↑n)^2
+  r_le_n : r < n
+  ordergeq: addOrderOf (n : ZMod r) > (Nat.log 10 n)^2
 
 /-
 For given integer n ≥ 2, let r be a positive integer < n, for which

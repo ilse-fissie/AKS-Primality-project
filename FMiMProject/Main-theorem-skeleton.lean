@@ -1,6 +1,7 @@
 import Mathlib.Tactic
 import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Algebra.Polynomial.Basic
+-- import Mathlib.Data.Nat.Prime.Defs
 
 /- In this file we will start with the proof of the main theorem
 of the AKS primality test. The main theorem is:
@@ -33,21 +34,33 @@ for n
 -- h(X) irriducible factor of Φ_r(X) in (ℤ/pℤ)[X]
 -- 𝔽 :≡ ℤ [X]/(p, h(x)) iso to field of p^m elements
 -- m = deg h, 𝔽 - {0} cyclic group of order p^m -1,
-
-def PolyRing_Z_p_Xr (p: ℕ) (r: ℕ ) [Fact p.prime]  := AdjoinRoot (X^r -1 : (ZMod p)[X])
 --   and r | p^m-1, because x of order r
 
--- H = ⟨ X, X+1, X+2, ..., X+[A]⟩ / (p, X^r-1)
+open Polynomial
 
+-- *Why is this type Type?*
+def PolyRing_Z_p_Xr (p: ℕ) (r: ℕ ) [Fact p.Prime]  :=
+  AdjoinRoot (X^r -1 : (ZMod p)[X])
 
-def Set_H (p: ℕ )( A : ℕ) (r :ℕ ): Set ℕ := sorry
+-- set = ⟨X, X+1, X+2, ..., X+[A]⟩ / (p)
+-- H = ⟨X, X+1, X+2, ..., X+[A]⟩ / (p, X^r-1)
 
+-- *Error?*
+-- noncomputable
+def First_Set (p: ℕ )(n_A : ℕ) [Fact p.Prime] :=
+  Subsemigroup.closure {(X+i: (ZMod p)[X])| 0 ≤ i // i ≤ n_A}
+  sorry
+
+-- *Error?*
+def Set_H (p: ℕ )(n_A : ℕ) (r : ℕ) [Fact p.Prime] :=
+  Set.inter (First_Set p n_A) (PolyRing_Z_p_Xr p r )
+
+def Set_G_h
 -- G = ⟨ X, X+1, X+2, ..., X+[A]⟩ / (p, h(X))
 -- ? = H/ (h(X))
 -- g ∈ G, g ≠ 0
 -- g(X) = Π _{0 ≤ a ≤ A}(x+a)^{e_a} ∈ H
 -- g(X)^n = g(X^n) mod (p, X^r-1)
-
 
 -- S = {} k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
 -- p, n ∈ S

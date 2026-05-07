@@ -16,19 +16,22 @@ for n
 -- p | n, p prime
 -- Cyclotomic polynomials Φ_d :
 -- x^r -1 = Π_{d|r} Φ_d(X)
--- 𝔽 :≡ ℤ [x]/(p, h(x)) iso to field of p^m elements
--- 𝔽 - {0} cyclic group of order p^m -1, and r | p^m-1
--- x of order r
+-- h(X) irriducible factor of Φ_r(X) in (ℤ/pℤ)[X]
+-- 𝔽 :≡ ℤ [X]/(p, h(x)) iso to field of p^m elements
+-- m = deg h, 𝔽 - {0} cyclic group of order p^m -1,
+--   and r | p^m-1, because x of order r
+
+-- H = ⟨ X, X+1, X+2, ..., X+[A]⟩ / (p, X^r-1)
+
+-- G = ⟨ X, X+1, X+2, ..., X+[A]⟩ / (p, h(X))
+-- ? = H/ (h(X))
+-- g ∈ G, g ≠ 0
+-- g(X) = Π _{0 ≤ a ≤ A}(x+a)^{e_a} ∈ H
+-- g(X)^n = g(X^n) mod (p, X^r-1)
 
 
-/-
-Let $H$ be the elements $\mod (p, x^r - 1)$ generated multiplicatively
-by $x, x + 1, x + 2,..., x + [A]$, $A = \sqrt{r}\log n$.\\
-Let $G$ be the (cyclic) subgroup of $\mathbb{F}$ generated
-multiplicatively by $x, x + 1, x + 2,..., x + [A]$.\\
-Define $S$ the set of positive integers $k$ for which $g(x^k)
-\equiv g(x)^k \mod (p, x^r - 1)$ for all $g \in H$,
--/
+-- S = {} k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
+-- p, n ∈ S
 
 /-
 Lemma 4.1
@@ -36,7 +39,6 @@ Lemma 4.1
    If $a, b \in S$, then $ab \in S$.
 \end{lemma}
 -/
-
 
 /-
 Lemma 4.2

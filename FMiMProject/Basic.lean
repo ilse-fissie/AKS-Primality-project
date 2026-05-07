@@ -27,13 +27,7 @@ theorem Theorem1 (n : ℕ) (h_ngone: n > 1) :
       grind --you can also use "omega"
     push Not
     intro h_not_prime
-    rw[add_pow] at h_not_prime
-    have := congrArg (fun (f : (ZMod n)[X]) => Polynomial.coeff f p) h_not_prime
-    dsimp at this
-    simp[le_of_lt p_lt, ne_of_lt p_lt] at this
-    rw[Polynomial.coeff_one] at this
-    simp[Nat.Prime.ne_zero p_prime] at this
-    sorry
+    · sorry
 
 
 
@@ -42,5 +36,9 @@ theorem Theorem1 (n : ℕ) (h_ngone: n > 1) :
 --  | []      => []
 
 --Dont forget to implement the order condition: smallest k st n^k mod n = 1
-theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ) (h_ngone: n > 1) (h_r_less_than_n : r < n):
- n.Prime ↔ True := by sorry
+/- ord (n) = n Mod r ∈ ℤ (smallest k ∈ ℕ s.t. ∃ m ∈ ℤ  s.t. n= m·r + k)
+and n Mod r >
+-/
+theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ) (h_ngone: n > 1)
+  (h_r_less_than_n : r < n) (h_order : orderOf (n: ZMod r) > (Real.log n)^2): n.Prime ↔
+  True := by sorry

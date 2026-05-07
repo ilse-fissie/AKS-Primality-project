@@ -13,6 +13,7 @@ structure values where
   r_le_n : r < n
   ordergeq: addOrderOf (n : ZMod r) > (Nat.log 10 n)^2
 
+
 /-
 For given integer n ≥ 2, let r be a positive integer < n, for which
 n has order > (log n)2 modulo r. Then n is prime if and only if
@@ -70,3 +71,20 @@ Lemma 4.3
    Suppose that $f(x), g(x) \in \mathbb{Z}[x]$ with $f(x) \equiv g(x) \mod (p, h(x))$ and that the reductions of $f$ and $g$ in $\mathbb{F}$ both belong to $G$. If $f$ and $g$ both have degree $< |R|$, then $f(x) equiv g(x) (\mod p)$
 \end{lemma}
 -/
+def first_condition (n : ℕ) : Prop :=
+   ¬IsPrimePow n
+
+def seccond_condition (n r : ℕ) : Prop :=
+   ∀ b ≤ r, b ∉ Nat.primeFactors n
+
+open Polynomial
+
+variable(a : ℕ+)
+def third_condition (n r : ℕ) : Prop :=
+   ∀ a ≤ (Real.sqrt r)*(Real.log n), true
+--   Polynomial.mod ((X + a: (ZMod n)[X])^n) (X^r - 1) = X^n + a
+
+
+theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ+) (h_ngone: n > 1)
+  (h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2): n.Prime ↔
+  first_condition n ∧ seccond_condition n r ∧ third_condition n r  := by sorry

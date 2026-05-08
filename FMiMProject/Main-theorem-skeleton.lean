@@ -95,12 +95,11 @@ def first_condition (n : ℕ) : Prop :=
 def seccond_condition (n r : ℕ) : Prop :=
    ∀ b ≤ r, b ∉ Nat.primeFactors n
 
-open Polynomial
-
 variable(a : ℕ+)
-def third_condition (n r : ℕ) : Prop :=
-   ∀ a ≤ (Real.sqrt r)*(Real.log n), true
---   Polynomial.mod ((X + a: (ZMod n)[X])^n) (X^r - 1) = X^n + a
+def third_condition (n r : ℕ) : Prop := true
+--   ∀ a ≤ (Real.sqrt r)*(Real.log n), ((X + a: AdjoinRoot (X^r -1 : (ZMod n)[X])))^n = (X^n + a)
+
+--   Polynomial.mod ((X + a: (ZMod n)[X] )^n) (X^r - 1) = (X^n + a)
 
 
 theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ+) (h_ngone: n > 1)

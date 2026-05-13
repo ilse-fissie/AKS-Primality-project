@@ -6,6 +6,8 @@ import Mathlib.Algebra.Polynomial.Basic
 /- In this file we will start with the proof of the main theorem
 of the AKS primality test. The main theorem is:
 -/
+--set_option trace.Meta.synthInstance true
+
 structure values where
   n : ℕ
   n_geq_two: n ≥ 2
@@ -100,7 +102,7 @@ Lemma 4.3
 \end{lemma}
 -/
 def first_condition (n : ℕ) : Prop :=
-   ¬IsPrimePow n
+  ∀  (a b : ℕ),a ≠ n ∧ b > 1 ↔ a^b ≠ n
 
 def seccond_condition (n r : ℕ) : Prop :=
    ∀ b ≤ r, b ∉ Nat.primeFactors n
@@ -114,4 +116,28 @@ def third_condition (n r : ℕ) : Prop := true
 
 theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ+) (h_ngone: n > 1)
   (h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2): n.Prime ↔
-  first_condition n ∧ seccond_condition n r ∧ third_condition n r  := by sorry
+  first_condition n ∧ seccond_condition n r ∧ third_condition n r  := by
+  constructor
+  · intro h
+    constructor
+    · unfold first_condition
+      intro a b
+      sorry
+--      apply ¬ Nat.Prime.pow_eq_iff h
+    · constructor
+      · unfold seccond_condition
+        simp [Nat.Prime.primeFactors h]
+        intro b
+        intro h_one
+        have h_two : b < n := by
+          apply lt_of_le_of_lt h_one h_r_less_than_n
+        apply ne_of_lt h_two
+      · sorry --uncomment when third_condition is complete:
+/-        unfold third_condition
+        intro h_three
+        have name : Fact (Nat.Prime n) := {out := h_three}
+        rw [add_pow_char]
+        simp-/
+  · contrapose
+    let (p: ℕ)(hp_one: p ∈ Nat.primeFactors n)(hp_two: third_condition p r)
+    sorry

@@ -30,49 +30,62 @@ structure values where
 
 open Polynomial
 
--- *Why is this type Type?*
 abbrev PolyRing_Z_p_Xr (p: ℕ) (r: ℕ ) [Fact p.Prime]  :=
   AdjoinRoot (X^r -1 : (ZMod p)[X])
+-- abbrev instead of def, to make lean read it in instances
+-- one extra layer of visibility?
 
 variable (p: ℕ) (r: ℕ ) (n_A :ℕ ) [Fact p.Prime]
 instance : Algebra ℤ[X] (PolyRing_Z_p_Xr p r) :=
   sorry
--- set = ⟨X, X+1, X+2, ..., X+[A]⟩ / (p)
--- H = ⟨X, X+1, X+2, ..., X+[A]⟩ / (p, X^r-1)
+-- *I do not remember what I needed to do here and why*
 
--- *Error?*
-noncomputable def H_Set (p: ℕ )(n_A : ℕ) (r: ℕ) [Fact p.Prime] :
-    Submonoid (PolyRing_Z_p_Xr p r) :=
+noncomputable def H_Monoid
+    -- (p: ℕ )(r: ℕ) [Fact p.Prime] -- These are already general variables
+    : Submonoid (PolyRing_Z_p_Xr p r) := -- type : submonoid of (Z/p[X])/(X^r -1)
   Submonoid.map (algebraMap ℤ[X] (PolyRing_Z_p_Xr p r))
   (Submonoid.closure ( { (X + C i )| (i :ℤ ) (_ : 0 ≤ i) (_ : i ≤ n_A) }) )
+-- H_Monoid = ⟨X, X+1, X+2, ..., X+A⟩ / (p, X^r-1)
+-- is the monoid given by the image of the map f: ℤ[X] → ℤ/p[X]/(X^r -1),
+-- restricted to domain (X, X+1, ...., X+n_A)
 
 -- add assumptions
-structure irred_factor_cyclo_mod_p   where
-  h:(ZMod p)[X]
-  h_irred : Irreducible h
-  h_factor_cyclo : h ∣ (X^r -1 :(ZMod p)[X] )
+-- h_poly is a polynomial in ℤ/p[X], which is irriducible and is a factor of X^r -1
+structure irred_mod_p_factor_Xr where
+  h_poly :(ZMod p)[X]
+  h_irred : Irreducible h_poly
+  h_factor_Xr : h_poly ∣ (X^r -1 :(ZMod p)[X] )
+  -- *This needs to be specified to a factor of Φ_r, the cyclotomic polynomial*
 
 variable {p r} in
-abbrev F (h: irred_factor_cyclo_mod_p p r) := AdjoinRoot h.h
+abbrev Field_F (h: irred_mod_p_factor_Xr p r) := AdjoinRoot h.h_poly
+-- F = Field_F =(ℤ/p[X]/(X^r-1))/h,
+-- since h is irred and a factor of X^r -1, F is a field (Lean knows this)
 
-variable (h : irred_factor_cyclo_mod_p p r)
+variable (h : irred_mod_p_factor_Xr p r)
 
-noncomputable def map : PolyRing_Z_p_Xr p r →ₐ[ZMod p] F h := AdjoinRoot.liftAlgHom _
-    (Algebra.ofId _ _) (AdjoinRoot.root _) <| by
+noncomputable def map : PolyRing_Z_p_Xr p r →ₐ[ZMod p] Field_F h :=
+  AdjoinRoot.liftAlgHom _ (Algebra.ofId _ _) (AdjoinRoot.root _) <| by
+  simp
 
+  -- h.h_factor_Xr
   sorry
+
+-- This is the map we need to define G, as submonoid of F
+
+
+def G_h : Submonoid (Field_F h) :=
+  Submonoid.map (map p r h _) (H_Monoid p r)
+
 --  G = ⟨ X, X+1, X+2, ..., X+[A]⟩ / (p, h(X))
 --    = H/ (h(X))
--- *I do not know how to define G, can I use AdjoinRoot? or
-def Set_G_h : Submonoid (F h) :=
-  Submonoid.map _ (H_Set p n_A r)
 
 
 -- g ∈ G, g ≠ 0
 -- g(X) = Π _{0 ≤ a ≤ A}(x+a)^{e_a} ∈ H
 -- g(X)^n = g(X^n) mod (p, X^r-1)
 
--- S = {} k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
+-- S = { k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
 -- p, n ∈ S
 
 /-

@@ -22,7 +22,7 @@ theorem Theorem1 (n : ℕ) (h_ngone: n > 1) :
   · contrapose
     intro h
     let p := Nat.minFac n
-    have p_lt : p < n := sorry
+    have p_lt : p < n := (Nat.not_prime_iff_minFac_lt (by omega)).1 h
     have p_prime : Nat.Prime p := by
       apply Nat.minFac_prime
       grind --you can also use "omega"
@@ -34,7 +34,24 @@ theorem Theorem1 (n : ℕ) (h_ngone: n > 1) :
     simp[le_of_lt p_lt, ne_of_lt p_lt] at this
     rw[Polynomial.coeff_one] at this
     simp[Nat.Prime.ne_zero p_prime] at this
+    have : (n.choose p).factorization p < n.factorization p := by
+      rw [Nat.choose_eq_descFactorial_div_factorial]
+      rw [Nat.factorization_div (by sorry)]
+      have : ((n.descFactorial p).factorization p = n.factorization p) := by sorry
+      simp only [Finsupp.coe_tsub, Pi.sub_apply, gt_iff_lt]
+      rw [this]
+      have : p.factorial.factorization p = 1 := by sorry
+      rw [this]
+      have : n.factorization p ≠ 0 := by
+        apply Nat.factorization_minFac_ne_zero
+        assumption
+      omega
+    -- have := Nat.factorization_choose p_prime (le_of_lt p_lt) (by sorry : _ < n)
+    -- simp at this
+
     sorry
+
+
 
 
 

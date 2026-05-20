@@ -101,8 +101,9 @@ noncomputable def G_h : Submonoid (Field_F h) :=
 -- S = { k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
 -- p, n ∈ S
 
-theorem lemma_one {S : Type u_1} (a b : S) : true := by rfl
---a*b ∈ S := by sorry
+theorem lemma_one {S : Type u_1} (a b : S)
+: true := by rfl
+--: a*b ∈ S := by sorry
 
 /-
 Lemma 4.1
@@ -112,8 +113,9 @@ Lemma 4.1
 -/
 
 theorem lemma_two {S : Type u_1}{G : Type u_1} (a b : S)(n r : ℕ+)(h_ngone: n > 1)
-  (h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2) : true := by rfl
---(a : ZMod r) = b → (a : ZMod G.index) = b := by sorry
+  (h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
+  : true := by rfl
+--: (a : ZMod r) = b → (a : ZMod G.index) = b := by sorry
 
 /-
 Lemma 4.2
@@ -134,9 +136,9 @@ def p_condition (n r p : ℕ) : Prop :=
 theorem lemma_three {R : Type u_1}{S : Type u_1}{G : Type u_1}
   (n r : ℕ+)(h_ngone: n > 1)(h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
   (p : ℕ)(h_p_div_n: p ∣ n)(h_p_condition: p_condition n r p)
-  (h: irred_mod_p_factor_Xr p r)
+  (h : irred_mod_p_factor_Xr p r)
   (f g : ℤ[X]) (h_f_equiv_g : AdjoinRoot.mk (h : (ZMod p)[X]) f = g)
-  /-the reductions of $f$ and $g$ in $\mathbb{F}$ both belong to $G$.-/
+  /-Is this what they mean?-/(h_reductions : AdjoinRoot.mk (h : (ZMod p)[X]) f ∈ G ∧ AdjoinRoot.mk (h : (ZMod p)[X]) g ∈ G)
   : true := by rfl
 --f.degree < R.index ∧ g.degree < R.index → (f : (ZMod p)[X]) = g := by sorry
 
@@ -193,14 +195,7 @@ theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ+) (h_ngone: n > 1)
         have name : Fact (Nat.Prime n) := {out := h}
 --        unfold AdjoinRoot.mk
         rw[add_pow_char (X + C↑↑a)^n]
-
         sorry
-        --uncomment when third_condition is complete:
-/-        unfold third_condition
-        intro h_three
-        have name : Fact (Nat.Prime n) := {out := h_three}
-        rw [add_pow_char]
-        simp-/
   · contrapose
     let (p: ℕ)(hp_one: p ∈ Nat.primeFactors n)(hp_two: third_condition p r)
     sorry

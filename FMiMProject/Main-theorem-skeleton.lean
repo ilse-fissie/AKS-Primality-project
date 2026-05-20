@@ -64,19 +64,28 @@ abbrev Field_F (h: irred_mod_p_factor_Xr p r) := AdjoinRoot h.h_poly
 
 variable (h : irred_mod_p_factor_Xr p r)
 
+-- *Also see below*
 noncomputable def map : PolyRing_Z_p_Xr p r →ₐ[ZMod p] Field_F h :=
   AdjoinRoot.liftAlgHom _ (Algebra.ofId _ _) (AdjoinRoot.root _) <| by
   simp
-
   -- h.h_factor_Xr
   sorry
 
+/-
+/-- `AdjoinRoot.map` as an `AlgHom`. -/
+def mapAlgHom (f : S →ₐ[R] T) (p : S[X]) (q : T[X]) (h : q ∣ p.map f) :
+    AdjoinRoot p →ₐ[R] AdjoinRoot q where
+  __ := map f p q h
+  commutes' r := by simp [map, AdjoinRoot.algebraMap_eq']
+
+-- *Use this to define map (maybe with an instance?)*
+def map₂  : PolyRing_Z_p_Xr p r →ₐ[ZMod p] Field_F h  := AdjoinRoot.mapAlgHom ()
+-/
+
 -- This is the map we need to define G, as submonoid of F
 
-
-def G_h : Submonoid (Field_F h) :=
-  Submonoid.map (map p r h _) (H_Monoid p r)
-
+noncomputable def G_h : Submonoid (Field_F h) :=
+  Submonoid.map (map p r h) (H_Monoid p r n_A)
 --  G = ⟨ X, X+1, X+2, ..., X+[A]⟩ / (p, h(X))
 --    = H/ (h(X))
 
@@ -84,6 +93,8 @@ def G_h : Submonoid (Field_F h) :=
 -- g ∈ G, g ≠ 0
 -- g(X) = Π _{0 ≤ a ≤ A}(x+a)^{e_a} ∈ H
 -- g(X)^n = g(X^n) mod (p, X^r-1)
+
+-- noncomputable def Set_S : Set ℕ :=
 
 -- S = { k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
 -- p, n ∈ S

@@ -115,14 +115,23 @@ Lemma 4.3
 \end{lemma}
 -/
 def first_condition (n : ℕ) : Prop :=
-  ∀  (a b : ℕ),a ≠ n ∧ b > 1 ↔ a^b ≠ n
+  ∀  (a b : ℕ),a ≠ n → 2 ≤ b → a^b ≠ n
 
 def seccond_condition (n r : ℕ) : Prop :=
    ∀ b ≤ r, b ∉ Nat.primeFactors n
 
+variable (n : ℕ)
+#check AdjoinRoot.mk (X^r -1 : (ZMod n)[X])
+
 variable(a : ℕ+)
-def third_condition (n r : ℕ) : Prop := true
---   ∀ a ≤ (Real.sqrt r)*(Real.log n), ((X + a: AdjoinRoot (X^r -1 : (ZMod n)[X])))^n = (X^n + a)
+def third_condition (n r : ℕ) : Prop :=
+  ∀ a:ℕ+, a ≤ Int.floor (Real.sqrt r)*(Real.log n) → AdjoinRoot.mk (X^r -1 : (ZMod n)[X]) ((X: (ZMod n)[X]) + (C a: (ZMod n)[X]))^n = AdjoinRoot.mk (X^r -1 : (ZMod n)[X]) ((X^n:(ZMod n)[X]) + (C a: (ZMod n)[X]))
+--  ∀ a:ℕ+, a ≤ Int.floor (Real.sqrt r)*(Real.log n) → (((X: (ZMod n)[X]) +  (C a: (ZMod n)[X])) : AdjoinRoot.mk (X^r -1 : (ZMod n)[X]))^n = (X^n + (C a: (ZMod n)[X]))
+
+--  ∀ (a:ℕ+), ((a : ℕ) : ℤ) ≤ Int.floor ((Real.sqrt r)*(Real.log n)) → ((((X : (ZMod n)[X]) + (C (a : ZMod n) : (ZMod n)[X])):AdjoinRoot (X^r - 1 : (ZMod n)[X])))^n = (((X^n : (ZMod n)[X]) + (C (a : ZMod n) : (ZMod n)[X])) : AdjoinRoot (X^r - 1 : (ZMod n)[X]))
+--   ∀ (a:ℕ+), ((a : ℕ) : ℤ) ≤ Int.floor ((Real.sqrt r)*(Real.log n)) → ((((X:(ZMod n)[X]) + (C a :(ZMod n)[X])): AdjoinRoot (X^r -1 : (ZMod n)[X])))^n = ((X^n:(ZMod n)[X]) + (C a: (ZMod n)[X]))
+--  ∀ a ≤ (Real.sqrt r) * (Real.log n), ((AdjoinRoot.of (X : (ZMod n)[X]) +
+--  AdjoinRoot.of (C a : (ZMod n)[X]))^n: AdjoinRoot (X^r - 1 : (ZMod n)[X])) = ((AdjoinRoot.of (X^n : (ZMod n)[X]) + AdjoinRoot.of (C a : (ZMod n)[X])): AdjoinRoot (X^r - 1 : (ZMod n)[X]))
 
 --   Polynomial.mod ((X + a: (ZMod n)[X] )^n) (X^r - 1) = (X^n + a)
 
@@ -135,17 +144,29 @@ theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ+) (h_ngone: n > 1)
     constructor
     · unfold first_condition
       intro a b
+      intro h_a_not_n
+      intro h_b_geq_two
+      have h_a_pow_b_not_prime : ¬ (a^b).Prime := by
+        apply Nat.Prime.not_prime_pow h_b_geq_two
       sorry
 --      apply ¬ Nat.Prime.pow_eq_iff h
     · constructor
       · unfold seccond_condition
         simp [Nat.Prime.primeFactors h]
         intro b
-        intro h_one
-        have h_two : b < n := by
-          apply lt_of_le_of_lt h_one h_r_less_than_n
-        apply ne_of_lt h_two
-      · sorry --uncomment when third_condition is complete:
+        intro h_b_leq_r
+        have h_b_l_n : b < n := by
+          apply lt_of_le_of_lt h_b_leq_r h_r_less_than_n
+        apply ne_of_lt h_b_l_n
+      · unfold third_condition
+        intro a
+        intro h_a_leq
+        have name : Fact (Nat.Prime n) := {out := h}
+--        unfold AdjoinRoot.mk
+        rw[add_pow_char]
+
+        sorry
+        --uncomment when third_condition is complete:
 /-        unfold third_condition
         intro h_three
         have name : Fact (Nat.Prime n) := {out := h_three}

@@ -42,14 +42,13 @@ instance : Algebra ℤ[X] (PolyRing_Z_p_Xr p r) :=
   sorry
 -- *I do not remember what I needed to do here and why*
 
-noncomputable def H_Monoid
-    -- (p: ℕ )(r: ℕ) [Fact p.Prime] -- These are already general variables
-    : Submonoid (PolyRing_Z_p_Xr p r) := -- type : submonoid of (Z/p[X])/(X^r -1)
+noncomputable def H_Monoid : Submonoid (PolyRing_Z_p_Xr p r) :=
   Submonoid.map (algebraMap ℤ[X] (PolyRing_Z_p_Xr p r))
   (Submonoid.closure ( { (X + C i )| (i :ℤ ) (_ : 0 ≤ i) (_ : i ≤ n_A) }) )
 -- H_Monoid = ⟨X, X+1, X+2, ..., X+A⟩ / (p, X^r-1)
 -- is the monoid given by the image of the map f: ℤ[X] → ℤ/p[X]/(X^r -1),
 -- restricted to domain (X, X+1, ...., X+n_A)
+
 
 -- add assumptions
 -- h_poly is a polynomial in ℤ/p[X], which is irriducible and is a factor of X^r -1
@@ -64,6 +63,7 @@ abbrev Field_F (h: irred_mod_p_factor_Xr p r) := AdjoinRoot h.h_poly
 -- F = Field_F =(ℤ/p[X]/(X^r-1))/h,
 -- since h is irred and a factor of X^r -1, F is a field (Lean knows this)
 
+
 variable (h : irred_mod_p_factor_Xr p r)
 
 -- *Also see below*
@@ -74,6 +74,16 @@ noncomputable def map : PolyRing_Z_p_Xr p r →ₐ[ZMod p] Field_F h :=
   sorry
 
 /-
+You could prove it by having an intermediate ‘have’ with a proof of
+X^r - 1 = h * q , for some polynomial q, and rewriting X^r - 1 before the simp.
+
+-/
+
+
+/-
+*However, you might want to look at AdjoinRoot.mapAlgHom, which might*
+*be what you are looking for (you can take the morphism f to be the identity).*
+
 /-- `AdjoinRoot.map` as an `AlgHom`. -/
 def mapAlgHom (f : S →ₐ[R] T) (p : S[X]) (q : T[X]) (h : q ∣ p.map f) :
     AdjoinRoot p →ₐ[R] AdjoinRoot q where
@@ -96,7 +106,13 @@ noncomputable def G_h : Submonoid (Field_F h) :=
 -- g(X) = Π _{0 ≤ a ≤ A}(x+a)^{e_a} ∈ H
 -- g(X)^n = g(X^n) mod (p, X^r-1)
 
--- noncomputable def Set_S : Set ℕ :=
+
+def property_of_S : Prop :=
+  ∀ g : H_Monoid, g(X^n) = g(X)^n
+  sorry
+
+def Set_S : Set ℕ :=
+  {k: Nat | g(X) = g(X) }
 
 -- S = { k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
 -- p, n ∈ S

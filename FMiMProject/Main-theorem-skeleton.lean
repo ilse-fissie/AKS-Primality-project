@@ -32,7 +32,7 @@ variable (p: ℕ) (r: ℕ ) (n_A :ℕ ) [Fact p.Prime]
 -- RingHom = AdjoinRoot.mk (X^r -1 : (ZMod p)[X])
 
 noncomputable def Closure_X_to_Xn_A : Submonoid (ZMod p)[X] :=
-  Submonoid.closure ({ (X : (ZMod p)[X]) + (C i : (ZMod p)[X]) | (i :ℤ ) (_ : 0 ≤ i) (_ : i ≤ n_A) })
+  Submonoid.closure { (X : (ZMod p)[X]) + (C i : (ZMod p)[X]) | (i :ℤ ) (_ : 0 ≤ i) (_ : i ≤ n_A) }
 -- Closure_X_to_Xn_A = ⟨X, X+1, X+2, ..., X+A⟩ ⊆ ℤ/p[X]
 
 noncomputable def H_Monoid : Submonoid (PolyRing_Z_p_Xr p r) := by
@@ -82,9 +82,11 @@ def property_of_S : ℕ → Prop := by
 
 def Set_S : Set ℕ :=
   {k: Nat | property_of_S p r n_A h k }
+
+
 variable (n : ℕ)
 def Set_R : Subgroup (ZMod r)ˣ :=
-   (Subgroup.closure {n, p} )
+   (Subgroup.closure ( {j : ℤ | (j=n) ∨ (j = p)}) )
 
 -- S = { k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
 -- p, n ∈ S
@@ -135,8 +137,7 @@ def p_condition (n r p : ℕ) : Prop :=
   ∀ a:ℕ+, a ≤ Int.floor (Real.sqrt r)*(Real.log n) →
   AdjoinRoot.mk (X^r -1 : (ZMod p)[X]) ((X: (ZMod p)[X]) + (C a: (ZMod p)[X]))^n =
   AdjoinRoot.mk (X^r -1 : (ZMod p)[X]) ((X^n:(ZMod p)[X]) + (C a: (ZMod p)[X]))
-#check G_h
-#where
+
 theorem lemma_three --still add in *{R : Type u_1}*
   (h_r_g_one: r > 1)(h_ngone: n > 1)(h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
   (h_p_prime : p.Prime)(h_p_div_n: p ∣ n)(h_p_condition: p_condition n r p)

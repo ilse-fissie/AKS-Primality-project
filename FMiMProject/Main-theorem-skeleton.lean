@@ -90,7 +90,7 @@ def Set_S : Set ℕ :=
   {k: Nat | property_of_S p r n_A h k }
 -- S = {k ∈ ℕ | g(X^k) = g(X)^K ∈ Field_F }
 
-def Set_R (p' n' : (ZMod r)ˣ) : Subgroup (ZMod r)ˣ :=
+def Set_R (r: ℕ) (p' n' : (ZMod r)ˣ) : Subgroup (ZMod r)ˣ :=
    (Subgroup.closure ( {p', n'}) )
 -- We assume p', n'∈ (ZMod r)ˣ, we need to prove this for p, n in the lemma's
 -- Use rangle langle to give elements in combination with proof of properties
@@ -141,16 +141,18 @@ def p_condition (n r p : ℕ) : Prop :=
   ∀ a:ℕ+, a ≤ Int.floor (Real.sqrt r)*(Real.log n) →
   AdjoinRoot.mk (X^r -1 : (ZMod p)[X]) ((X: (ZMod p)[X]) + (C a: (ZMod p)[X]))^n =
   AdjoinRoot.mk (X^r -1 : (ZMod p)[X]) ((X^n:(ZMod p)[X]) + (C a: (ZMod p)[X]))
-#where
+
 theorem lemma_three --still add in *{R : Type u_1}*
   (h_r_g_one: r > 1)(h_ngone: n > 1)(h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
+  (h_n_r_coprime : Nat.Coprime n r)(h_p_r_coprime : Nat.Coprime p r)
   /-(h_p_prime : p.Prime)-/(h_p_div_n: p ∣ n)(h_p_condition: p_condition n r p)
   (f g : ℤ[X]) (h_f_equiv_g : AdjoinRoot.mk (h.h_poly : (ZMod p)[X]) (f.map (algebraMap ℤ (ZMod p))) =
   AdjoinRoot.mk (h.h_poly : (ZMod p)[X]) (g.map (algebraMap ℤ (ZMod p))))
   (h_reductions : AdjoinRoot.mk (h.h_poly : (ZMod p)[X]) (f.map (algebraMap ℤ (ZMod p))) ∈ (G_h p r n_A h) ∧
   AdjoinRoot.mk (h.h_poly : (ZMod p)[X]) (g.map (algebraMap ℤ (ZMod p))) ∈ (G_h p r n_A h))
-  : true := by rfl
---  : f.degree < R.index ∧ g.degree < R.index → (f : (ZMod p)[X]) = g := by sorry
+  : f.degree < Subgroup.index (Set_R r (ZMod.unitOfCoprime p h_p_r_coprime) (ZMod.unitOfCoprime n h_n_r_coprime)) ∧
+  g.degree < Subgroup.index (Set_R r (ZMod.unitOfCoprime p h_p_r_coprime) (ZMod.unitOfCoprime n h_n_r_coprime)) →
+  (f.map (algebraMap ℤ (ZMod p))) = (g.map (algebraMap ℤ (ZMod p))) := by sorry
 
 def first_condition (n : ℕ) : Prop :=
   ∀  (a b : ℕ),a ≠ n → 2 ≤ b → a^b ≠ n
@@ -159,8 +161,6 @@ def seccond_condition (n r : ℕ) : Prop :=
    ∀ b ≤ r, b ∉ Nat.primeFactors n
 
 variable (n : ℕ)
-#check AdjoinRoot.mk (X^r -1 : (ZMod n)[X])
-
 variable(a : ℕ+)
 def third_condition (n r : ℕ) : Prop :=
   ∀ a:ℕ+, a ≤ Int.floor (Real.sqrt r)*(Real.log n) →
@@ -199,5 +199,4 @@ theorem AKS_Primality_Test {R : Type u_1}  (h_ngone: n > 1)(h_r_g_one: r > 1)
   · contrapose
     intro h
 --    let (p : ℕ)(h_p_prime : p.Prime)(h_p_div_n: p ∣ n)(h_p_condition: p_condition n r p)
-
     sorry

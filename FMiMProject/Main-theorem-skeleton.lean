@@ -101,23 +101,12 @@ noncomputable def G_h : Submonoid (Field_F h) :=
 -- S = { k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
 -- p, n ∈ S
 
-theorem lemma_one {S : Type u_1} (a b : S)
-: true := by rfl
---: a*b ∈ S := by sorry
-
 /-
 Lemma 4.1
 \begin{lemma}
    If $a, b \in S$, then $ab \in S$.
 \end{lemma}
--/
 
-theorem lemma_two {S : Type u_1}{G : Type u_1} (a b : S)(n r : ℕ+)(h_ngone: n > 1)
-  (h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
-  : true := by rfl
---: (a : ZMod r) = b → (a : ZMod G.index) = b := by sorry
-
-/-
 Lemma 4.2
 \begin{lemma}
    If $a, b \in S$ and $a \equiv b \mod r$, then $a \equiv b \mod |G|$.
@@ -126,7 +115,25 @@ Lemma 4.2
 Let $p$ be a prime dividing $n$ so that $(x + a)^n \equiv x^n + a \mod (p, x^r - 1)$.\\
 for $d|r$, $\Phi_d(x)$ is the $d$th cyclotomic polynomial, whose roots are the primitive $d$th roots of unity.\\
 Let $h(x)$ be an irreducible factor of $\Phi_r(x) (\mod p)$.
+
+Lemma 4.3
+\begin{lemma}
+   Suppose that $f(x), g(x) \in \mathbb{Z}[x]$ with $f(x) \equiv g(x) \mod (p, h(x))$
+   and that the reductions of $f$ and $g$ in $\mathbb{F}$ both belong to $G$.
+   If $f$ and $g$ both have degree $< |R|$, then $f(x) equiv g(x) (\mod p)$
+\end{lemma}
 -/
+
+--*when defs of H, G and S are finished, we can delete the : true := by rfl, and uncomment the line below it*
+theorem lemma_one {S : Type u_1} (a b : S)
+: true := by rfl
+--  : a*b ∈ S := by sorry
+
+theorem lemma_two {S : Type u_1}{G : Type u_1} (a b : S)(n r : ℕ+)(h_ngone: n > 1)
+  (h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
+  : true := by rfl
+--  : (a : ZMod r) = b → (a : ZMod G.index) = b := by sorry
+
 variable(a : ℕ+)
 def p_condition (n r p : ℕ) : Prop :=
   ∀ a:ℕ+, a ≤ Int.floor (Real.sqrt r)*(Real.log n) →
@@ -138,19 +145,10 @@ theorem lemma_three {R : Type u_1}{S : Type u_1}{G : Type u_1}
   (p : ℕ)(h_p_div_n: p ∣ n)(h_p_condition: p_condition n r p)
   (h : irred_mod_p_factor_Xr p r)
   (f g : ℤ[X]) (h_f_equiv_g : AdjoinRoot.mk (h : (ZMod p)[X]) f = g)
-  /-Is this what they mean?-/(h_reductions : AdjoinRoot.mk (h : (ZMod p)[X]) f ∈ G ∧ AdjoinRoot.mk (h : (ZMod p)[X]) g ∈ G)
+  (h_reductions : AdjoinRoot.mk (h : (ZMod p)[X]) f ∈ G ∧ AdjoinRoot.mk (h : (ZMod p)[X]) g ∈ G)
   : true := by rfl
---f.degree < R.index ∧ g.degree < R.index → (f : (ZMod p)[X]) = g := by sorry
+--  : f.degree < R.index ∧ g.degree < R.index → (f : (ZMod p)[X]) = g := by sorry
 
-
-/-
-Lemma 4.3
-\begin{lemma}
-   Suppose that $f(x), g(x) \in \mathbb{Z}[x]$ with $f(x) \equiv g(x) \mod (p, h(x))$
-   and that the reductions of $f$ and $g$ in $\mathbb{F}$ both belong to $G$.
-   If $f$ and $g$ both have degree $< |R|$, then $f(x) equiv g(x) (\mod p)$
-\end{lemma}
--/
 def first_condition (n : ℕ) : Prop :=
   ∀  (a b : ℕ),a ≠ n → 2 ≤ b → a^b ≠ n
 
@@ -179,7 +177,10 @@ theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ+) (h_ngone: n > 1)
       intro h_b_geq_two
       have h_a_pow_b_not_prime : ¬ (a^b).Prime := by
         apply Nat.Prime.not_prime_pow h_b_geq_two
-      sorry
+      intro hc
+      rw[hc] at h_a_pow_b_not_prime
+      apply h_a_pow_b_not_prime
+      exact (Nat.irreducible_iff_nat_prime ↑n).mp h
 --      apply ¬ Nat.Prime.pow_eq_iff h
     · constructor
       · unfold seccond_condition
@@ -193,9 +194,10 @@ theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ+) (h_ngone: n > 1)
         intro a
         intro h_a_leq
         have name : Fact (Nat.Prime n) := {out := h}
---        unfold AdjoinRoot.mk
-        rw[add_pow_char (X + C↑↑a)^n]
-        sorry
+        rw[← map_pow]
+        congr
+        rw[add_pow_char]
+        rw[← C_pow, ZMod.pow_card]
   · contrapose
     let (p: ℕ)(hp_one: p ∈ Nat.primeFactors n)(hp_two: third_condition p r)
     sorry

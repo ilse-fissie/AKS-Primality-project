@@ -114,6 +114,10 @@ def property_of_S : Prop :=
 def Set_S : Set ℕ :=
   {k: Nat | g(X) = g(X) }
 
+variable (n : ℕ)
+def Set_R : Subgroup (ZMod r)ˣ :=
+   (Subgroup.closure {n, p} )
+
 -- S = { k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
 -- p, n ∈ S
 
@@ -139,29 +143,30 @@ Lemma 4.3
    If $f$ and $g$ both have degree $< |R|$, then $f(x) equiv g(x) (\mod p)$
 \end{lemma}
 -/
-
 --*when defs of H, G and S are finished, we can delete the : true := by rfl, and uncomment the line below it*
-theorem lemma_one {S : Type u_1} (a b : S)
+theorem lemma_one (a b : Set_S)
 : true := by rfl
---  : a*b ∈ S := by sorry
+--  : a*b ∈ Set_S := by sorry
 
-theorem lemma_two {S : Type u_1}{G : Type u_1} (a b : S)(n r : ℕ+)(h_ngone: n > 1)
+theorem lemma_two (a b : Set_S)(h_r_g_one: r > 1)(h_ngone: n > 1)
   (h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
   : true := by rfl
---  : (a : ZMod r) = b → (a : ZMod G.index) = b := by sorry
+--  : (a : ZMod r) = b → (a : ZMod G_h.index) = b := by sorry
 
 variable(a : ℕ+)
 def p_condition (n r p : ℕ) : Prop :=
   ∀ a:ℕ+, a ≤ Int.floor (Real.sqrt r)*(Real.log n) →
   AdjoinRoot.mk (X^r -1 : (ZMod p)[X]) ((X: (ZMod p)[X]) + (C a: (ZMod p)[X]))^n =
   AdjoinRoot.mk (X^r -1 : (ZMod p)[X]) ((X^n:(ZMod p)[X]) + (C a: (ZMod p)[X]))
-
-theorem lemma_three {R : Type u_1}{S : Type u_1}{G : Type u_1}
-  (n r : ℕ+)(h_ngone: n > 1)(h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
-  (p : ℕ)(h_p_div_n: p ∣ n)(h_p_condition: p_condition n r p)
-  (h : irred_mod_p_factor_Xr p r)
-  (f g : ℤ[X]) (h_f_equiv_g : AdjoinRoot.mk (h : (ZMod p)[X]) f = g)
-  (h_reductions : AdjoinRoot.mk (h : (ZMod p)[X]) f ∈ G ∧ AdjoinRoot.mk (h : (ZMod p)[X]) g ∈ G)
+#check G_h
+#where
+theorem lemma_three --still add in *{R : Type u_1}*
+  (h_r_g_one: r > 1)(h_ngone: n > 1)(h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
+  (h_p_prime : p.Prime)(h_p_div_n: p ∣ n)(h_p_condition: p_condition n r p)
+  (f g : ℤ[X]) (h_f_equiv_g : AdjoinRoot.mk (h.h_poly : (ZMod p)[X]) (f.map (algebraMap ℤ (ZMod p))) =
+  AdjoinRoot.mk (h.h_poly : (ZMod p)[X]) (g.map (algebraMap ℤ (ZMod p))))
+  (h_reductions : AdjoinRoot.mk (h.h_poly : (ZMod p)[X]) (f.map (algebraMap ℤ (ZMod p))) ∈ (G_h p r n_A h) ∧
+  AdjoinRoot.mk (h.h_poly : (ZMod p)[X]) (g.map (algebraMap ℤ (ZMod p))) ∈ (G_h p r n_A h))
   : true := by rfl
 --  : f.degree < R.index ∧ g.degree < R.index → (f : (ZMod p)[X]) = g := by sorry
 
@@ -180,8 +185,7 @@ def third_condition (n r : ℕ) : Prop :=
   AdjoinRoot.mk (X^r -1 : (ZMod n)[X]) ((X: (ZMod n)[X]) + (C a: (ZMod n)[X]))^n =
   AdjoinRoot.mk (X^r -1 : (ZMod n)[X]) ((X^n:(ZMod n)[X]) + (C a: (ZMod n)[X]))
 
-
-theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ+) (h_ngone: n > 1)
+theorem AKS_Primality_Test {R : Type u_1}  (h_ngone: n > 1)(h_r_g_one: r > 1)
   (h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2): n.Prime ↔
   first_condition n ∧ seccond_condition n r ∧ third_condition n r  := by
   constructor
@@ -215,5 +219,7 @@ theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ+) (h_ngone: n > 1)
         rw[add_pow_char]
         rw[← C_pow, ZMod.pow_card]
   · contrapose
-    let (p: ℕ)(hp_one: p ∈ Nat.primeFactors n)(hp_two: third_condition p r)
+    intro h
+--    let (p : ℕ)(h_p_prime : p.Prime)(h_p_div_n: p ∣ n)(h_p_condition: p_condition n r p)
+
     sorry

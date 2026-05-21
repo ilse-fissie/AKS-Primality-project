@@ -4,10 +4,11 @@ import Mathlib.Algebra.Polynomial.Basic
 -- import Mathlib.Data.Nat.Prime.Defs
 
 /- In this file we will start with the proof of the main theorem
-of the AKS primality test. The main theorem is:
+of the AKS primality test.
 -/
---set_option trace.Meta.synthInstance true
 
+/-
+-- We do not use this (thought we would in the beginning)
 structure values where
   n : ℕ
   n_geq_two: n ≥ 2
@@ -15,21 +16,25 @@ structure values where
   r_nonneg : r ≥ 0
   r_le_n : r < n
   ordergeq: addOrderOf (n : ZMod r) > (Nat.log 10 n)^2
-
+-/
 
 open Polynomial
 
-abbrev PolyRing_Z_p_Xr (p: ℕ) (r: ℕ ) [Fact p.Prime]  :=
+variable (p: ℕ) (r: ℕ ) (n_A :ℕ ) [Fact p.Prime]
+
+abbrev PolyRing_Z_p_Xr :=
   AdjoinRoot (X^r -1 : (ZMod p)[X])
 -- PolyRing_Z_p_Xr = (ZMod p)[X] /(X^r -1)
 -- abbrev instead of def, to make lean read it in instances
 -- one extra layer of visibility?
 
-variable (p: ℕ) (r: ℕ ) (n_A :ℕ ) [Fact p.Prime]
--- instance : Algebra (ZMod p)[X] (PolyRing_Z_p_Xr p r) :=
+/-
+instance : Algebra (ZMod p)[X] (PolyRing_Z_p_Xr p r) :=
 
--- If we do need the instance: RingHom.toAlgebra, with
--- RingHom = AdjoinRoot.mk (X^r -1 : (ZMod p)[X])
+If we do need the instance: RingHom.toAlgebra, with
+RingHom = AdjoinRoot.mk (X^r -1 : (ZMod p)[X])
+-/
+
 
 noncomputable def Closure_X_to_Xn_A : Submonoid (ZMod p)[X] :=
   Submonoid.closure { (X : (ZMod p)[X]) + (C i : (ZMod p)[X]) | (i :ℤ ) (_ : 0 ≤ i) (_ : i ≤ n_A) }
@@ -43,14 +48,14 @@ noncomputable def H_Monoid : Submonoid (PolyRing_Z_p_Xr p r) := by
 -- restricted to domain (X, X+1, ...., X+n_A)
 
 -- add assumptions:
--- h_poly is a polynomial in ℤ/p[X], it is irriducible, and a factor of X^r -1
 structure irred_mod_p_factor_Xr where
   h_poly :(ZMod p)[X]
   h_irred : Irreducible h_poly
   h_factor_Xr : h_poly ∣ (X^r -1 :(ZMod p)[X] )
-  -- *This might have to be specified to a factor of Φ_r, the cyclotomic polynomial*
+-- h_poly is a polynomial in ℤ/p[X], it is irriducible, and a factor of X^r -1
+-- *This might have to be specified to a factor of Φ_r, the cyclotomic polynomial*
 
-variable {p r} in
+variable {p r} in -- *Why is this needed*
 abbrev Field_F (h: irred_mod_p_factor_Xr p r) := AdjoinRoot h.h_poly
 -- F = Field_F =(ℤ/p[X]/(X^r-1))/h,
 -- since h is irred and a factor of X^r -1, F is a field (Lean knows this)
@@ -79,14 +84,16 @@ def property_of_S : ℕ → Prop := by
   intro k
   exact ∀ g ∈ (Closure_X_to_Xn_A p n_A),
   AdjoinRoot.mk h.h_poly (g.comp X^k ) = (AdjoinRoot.mk h.h_poly g)^k
+-- k has the property of S if g(X^k) = g(X)^k ∈ Field_F
 
 def Set_S : Set ℕ :=
   {k: Nat | property_of_S p r n_A h k }
+-- S = {k ∈ ℕ | g(X^k) = g(X)^K ∈ Field_F }
 
-
-variable (n : ℕ)
-def Set_R : Subgroup (ZMod r)ˣ :=
-   (Subgroup.closure ( {j : ℤ | (j=n) ∨ (j = p)}) )
+def Set_R (p' n' : (ZMod r)ˣ) : Subgroup (ZMod r)ˣ :=
+   (Subgroup.closure ( {p', n'}) )
+-- We assume p', n'∈ (ZMod r)ˣ, we need to prove this for p, n in the lemma's
+-- Use rangle langle to give elements in combination with proof of properties
 
 -- S = { k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
 -- p, n ∈ S

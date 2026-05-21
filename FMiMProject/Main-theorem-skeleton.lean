@@ -130,14 +130,12 @@ Lemma 4.3
 \end{lemma}
 -/
 --*when defs of H, G and S are finished, we can delete the : true := by rfl, and uncomment the line below it*
-theorem lemma_one (a b : Set_S)
-: true := by rfl
---  : a*b ∈ Set_S := by sorry
+theorem lemma_one (a b : ℕ) (ha: a ∈ Set_S p r n_A h) (hb: b ∈ Set_S p r n_A h)
+  : a*b ∈ (Set_S p r n_A h) := by sorry
 
-theorem lemma_two (a b : Set_S)(h_r_g_one: r > 1)(h_ngone: n > 1)
+theorem lemma_two (a b : Set_S p r n_A h)(h_r_g_one: r > 1)(h_ngone: n > 1)
   (h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
-  : true := by rfl
---  : (a : ZMod r) = b → (a : ZMod G_h.index) = b := by sorry
+  : (a : ZMod r) = b → (a : ZMod (G_h p r n_A h).ctorIdx) = b := by sorry
 
 variable(a : ℕ+)
 def p_condition (n r p : ℕ) : Prop :=
@@ -177,9 +175,7 @@ theorem AKS_Primality_Test {R : Type u_1}  (h_ngone: n > 1)(h_r_g_one: r > 1)
   · intro h
     constructor
     · unfold first_condition
-      intro a b
-      intro h_a_not_n
-      intro h_b_geq_two
+      intro a b h_a_not_n h_b_geq_two
       have h_a_pow_b_not_prime : ¬ (a^b).Prime := by
         apply Nat.Prime.not_prime_pow h_b_geq_two
       intro hc
@@ -190,14 +186,12 @@ theorem AKS_Primality_Test {R : Type u_1}  (h_ngone: n > 1)(h_r_g_one: r > 1)
     · constructor
       · unfold seccond_condition
         simp [Nat.Prime.primeFactors h]
-        intro b
-        intro h_b_leq_r
+        intro b h_b_leq_r
         have h_b_l_n : b < n := by
           apply lt_of_le_of_lt h_b_leq_r h_r_less_than_n
         apply ne_of_lt h_b_l_n
       · unfold third_condition
-        intro a
-        intro h_a_leq
+        intro a h_a_leq
         have name : Fact (Nat.Prime n) := {out := h}
         rw[← map_pow]
         congr

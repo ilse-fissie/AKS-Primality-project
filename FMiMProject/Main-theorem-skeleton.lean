@@ -17,9 +17,73 @@ structure values where
   ordergeq: addOrderOf (n : ZMod r) > (Nat.log 10 n)^2
 
 
+open Polynomial
+
+abbrev PolyRing_Z_p_Xr (p: ℕ) (r: ℕ ) [Fact p.Prime]  :=
+  AdjoinRoot (X^r -1 : (ZMod p)[X])
+-- PolyRing_Z_p_Xr = (ZMod p)[X] /(X^r -1)
+-- abbrev instead of def, to make lean read it in instances
+-- one extra layer of visibility?
+
+variable (p: ℕ) (r: ℕ ) (n_A :ℕ ) [Fact p.Prime]
+-- instance : Algebra (ZMod p)[X] (PolyRing_Z_p_Xr p r) :=
+
+-- If we do need the instance: RingHom.toAlgebra, with
+-- RingHom = AdjoinRoot.mk (X^r -1 : (ZMod p)[X])
+
+noncomputable def Closure_X_to_Xn_A : Submonoid (ZMod p)[X] :=
+  Submonoid.closure ({ (X : (ZMod p)[X]) + (C i : (ZMod p)[X]) | (i :ℤ ) (_ : 0 ≤ i) (_ : i ≤ n_A) })
+-- Closure_X_to_Xn_A = ⟨X, X+1, X+2, ..., X+A⟩ ⊆ ℤ/p[X]
+
+noncomputable def H_Monoid : Submonoid (PolyRing_Z_p_Xr p r) := by
+  exact Submonoid.map (AdjoinRoot.mk (X^r -1 : (ZMod p)[X]))
+    (Closure_X_to_Xn_A p n_A )
+-- H_Monoid = ⟨X, X+1, X+2, ..., X+A⟩ / (p, X^r-1)
+-- is the monoid given by the image of the map f: ℤ[X] → ℤ/p[X]/(X^r -1),
+-- restricted to domain (X, X+1, ...., X+n_A)
+
+-- add assumptions:
+-- h_poly is a polynomial in ℤ/p[X], it is irriducible, and a factor of X^r -1
+structure irred_mod_p_factor_Xr where
+  h_poly :(ZMod p)[X]
+  h_irred : Irreducible h_poly
+  h_factor_Xr : h_poly ∣ (X^r -1 :(ZMod p)[X] )
+  -- *This might have to be specified to a factor of Φ_r, the cyclotomic polynomial*
+
+variable {p r} in
+abbrev Field_F (h: irred_mod_p_factor_Xr p r) := AdjoinRoot h.h_poly
+-- F = Field_F =(ℤ/p[X]/(X^r-1))/h,
+-- since h is irred and a factor of X^r -1, F is a field (Lean knows this)
+
+variable (h : irred_mod_p_factor_Xr p r)
+
+noncomputable def map : PolyRing_Z_p_Xr p r →ₐ[ZMod p] Field_F h  := by
+  unfold PolyRing_Z_p_Xr Field_F
+  refine AdjoinRoot.mapAlgHom (AlgHom.id (ZMod p) (ZMod p) )
+    (X ^ r - 1 : (ZMod p)[X]) h.h_poly ?_
+  simp
+  apply h.h_factor_Xr
+-- The map ℤ/p[X]/(X^r-1)→ ℤ/p[X]/(h), needed to define G, as submonoid of F
+
+noncomputable def G_h : Submonoid (Field_F h) :=
+  Submonoid.map (map p r h) (H_Monoid p r n_A)
+--  G = ⟨ X, X+1, X+2, ..., X+[A]⟩ / (p, h(X))
+--    = H/ (h(X))
+
+-- g ∈ G, g ≠ 0
+-- g(X) = Π _{0 ≤ a ≤ A}(x+a)^{e_a} ∈ H
+-- g(X)^n = g(X^n) mod (p, X^r-1)
 
 
--- Construction of the set S
+def property_of_S : ℕ → Prop := by
+  intro k
+  exact ∀ g ∈ (Closure_X_to_Xn_A p n_A),
+  AdjoinRoot.mk h.h_poly (g.comp X^k ) = (AdjoinRoot.mk h.h_poly g)^k
+
+def Set_S : Set ℕ :=
+  {k: Nat | property_of_S p r n_A h k }
+-- S = { k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
+-- p, n ∈ S
 
 -- A = √r log n
 -- p | n, p prime
@@ -29,93 +93,6 @@ structure values where
 -- 𝔽 :≡ ℤ [X]/(p, h(x)) iso to field of p^m elements
 -- m = deg h, 𝔽 - {0} cyclic group of order p^m -1,
 --   and r | p^m-1, because x of order r
-
-open Polynomial
-
-abbrev PolyRing_Z_p_Xr (p: ℕ) (r: ℕ ) [Fact p.Prime]  :=
-  AdjoinRoot (X^r -1 : (ZMod p)[X])
--- abbrev instead of def, to make lean read it in instances
--- one extra layer of visibility?
-
-variable (p: ℕ) (r: ℕ ) (n_A :ℕ ) [Fact p.Prime]
-instance : Algebra ℤ[X] (PolyRing_Z_p_Xr p r) :=
-  sorry
--- *I do not remember what I needed to do here and why*
-
-noncomputable def H_Monoid : Submonoid (PolyRing_Z_p_Xr p r) :=
-  Submonoid.map (algebraMap ℤ[X] (PolyRing_Z_p_Xr p r))
-  (Submonoid.closure ( { (X + C i )| (i :ℤ ) (_ : 0 ≤ i) (_ : i ≤ n_A) }) )
--- H_Monoid = ⟨X, X+1, X+2, ..., X+A⟩ / (p, X^r-1)
--- is the monoid given by the image of the map f: ℤ[X] → ℤ/p[X]/(X^r -1),
--- restricted to domain (X, X+1, ...., X+n_A)
-
-
--- add assumptions
--- h_poly is a polynomial in ℤ/p[X], which is irriducible and is a factor of X^r -1
-structure irred_mod_p_factor_Xr where
-  h_poly :(ZMod p)[X]
-  h_irred : Irreducible h_poly
-  h_factor_Xr : h_poly ∣ (X^r -1 :(ZMod p)[X] )
-  -- *This needs to be specified to a factor of Φ_r, the cyclotomic polynomial*
-
-variable {p r} in
-abbrev Field_F (h: irred_mod_p_factor_Xr p r) := AdjoinRoot h.h_poly
--- F = Field_F =(ℤ/p[X]/(X^r-1))/h,
--- since h is irred and a factor of X^r -1, F is a field (Lean knows this)
-
-
-variable (h : irred_mod_p_factor_Xr p r)
-
--- *Also see below*
-noncomputable def map : PolyRing_Z_p_Xr p r →ₐ[ZMod p] Field_F h :=
-  AdjoinRoot.liftAlgHom _ (Algebra.ofId _ _) (AdjoinRoot.root _) <| by
-  simp
-  -- h.h_factor_Xr
-  sorry
-
-/-
-You could prove it by having an intermediate ‘have’ with a proof of
-X^r - 1 = h * q , for some polynomial q, and rewriting X^r - 1 before the simp.
-
--/
-
-
-/-
-*However, you might want to look at AdjoinRoot.mapAlgHom, which might*
-*be what you are looking for (you can take the morphism f to be the identity).*
-
-/-- `AdjoinRoot.map` as an `AlgHom`. -/
-def mapAlgHom (f : S →ₐ[R] T) (p : S[X]) (q : T[X]) (h : q ∣ p.map f) :
-    AdjoinRoot p →ₐ[R] AdjoinRoot q where
-  __ := map f p q h
-  commutes' r := by simp [map, AdjoinRoot.algebraMap_eq']
-
--- *Use this to define map (maybe with an instance?)*
-def map₂  : PolyRing_Z_p_Xr p r →ₐ[ZMod p] Field_F h  := AdjoinRoot.mapAlgHom ()
--/
-
--- This is the map we need to define G, as submonoid of F
-
-noncomputable def G_h : Submonoid (Field_F h) :=
-  Submonoid.map (map p r h) (H_Monoid p r n_A)
---  G = ⟨ X, X+1, X+2, ..., X+[A]⟩ / (p, h(X))
---    = H/ (h(X))
-
-
--- g ∈ G, g ≠ 0
--- g(X) = Π _{0 ≤ a ≤ A}(x+a)^{e_a} ∈ H
--- g(X)^n = g(X^n) mod (p, X^r-1)
-
-
-def property_of_S : Prop :=
-  ∀ g : H_Monoid, g(X^n) = g(X)^n
-  sorry
-
-def Set_S : Set ℕ :=
-  {k: Nat | g(X) = g(X) }
-
--- S = { k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
--- p, n ∈ S
 
 theorem lemma_one {S : Type u_1} (a b : S)
 : true := by rfl

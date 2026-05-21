@@ -122,7 +122,6 @@ Lemma 4.3
    If $f$ and $g$ both have degree $< |R|$, then $f(x) equiv g(x) (\mod p)$
 \end{lemma}
 -/
---*when defs of H, G and S are finished, we can delete the : true := by rfl, and uncomment the line below it*
 theorem lemma_one (a b : ℕ) (ha: a ∈ Set_S p r n_A h) (hb: b ∈ Set_S p r n_A h)
   : a*b ∈ (Set_S p r n_A h) := by sorry
 
@@ -135,10 +134,10 @@ def p_condition (n r p : ℕ) : Prop :=
   ∀ a:ℕ+, a ≤ Int.floor (Real.sqrt r)*(Real.log n) →
   AdjoinRoot.mk (X^r -1 : (ZMod p)[X]) ((X: (ZMod p)[X]) + (C a: (ZMod p)[X]))^n =
   AdjoinRoot.mk (X^r -1 : (ZMod p)[X]) ((X^n:(ZMod p)[X]) + (C a: (ZMod p)[X]))
-
+#where
 theorem lemma_three --still add in *{R : Type u_1}*
   (h_r_g_one: r > 1)(h_ngone: n > 1)(h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
-  (h_p_prime : p.Prime)(h_p_div_n: p ∣ n)(h_p_condition: p_condition n r p)
+  /-(h_p_prime : p.Prime)-/(h_p_div_n: p ∣ n)(h_p_condition: p_condition n r p)
   (f g : ℤ[X]) (h_f_equiv_g : AdjoinRoot.mk (h.h_poly : (ZMod p)[X]) (f.map (algebraMap ℤ (ZMod p))) =
   AdjoinRoot.mk (h.h_poly : (ZMod p)[X]) (g.map (algebraMap ℤ (ZMod p))))
   (h_reductions : AdjoinRoot.mk (h.h_poly : (ZMod p)[X]) (f.map (algebraMap ℤ (ZMod p))) ∈ (G_h p r n_A h) ∧

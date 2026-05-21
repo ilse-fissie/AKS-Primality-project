@@ -117,12 +117,21 @@ def Set_S : Set ℕ :=
 -- S = { k \in \Z : g(X^k) = g(X)^k mod (p, X^r -1)}
 -- p, n ∈ S
 
+theorem lemma_one {S : Type u_1} (a b : S)
+: true := by rfl
+--: a*b ∈ S := by sorry
+
 /-
 Lemma 4.1
 \begin{lemma}
    If $a, b \in S$, then $ab \in S$.
 \end{lemma}
 -/
+
+theorem lemma_two {S : Type u_1}{G : Type u_1} (a b : S)(n r : ℕ+)(h_ngone: n > 1)
+  (h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
+  : true := by rfl
+--: (a : ZMod r) = b → (a : ZMod G.index) = b := by sorry
 
 /-
 Lemma 4.2
@@ -134,11 +143,28 @@ Let $p$ be a prime dividing $n$ so that $(x + a)^n \equiv x^n + a \mod (p, x^r -
 for $d|r$, $\Phi_d(x)$ is the $d$th cyclotomic polynomial, whose roots are the primitive $d$th roots of unity.\\
 Let $h(x)$ be an irreducible factor of $\Phi_r(x) (\mod p)$.
 -/
+variable(a : ℕ+)
+def p_condition (n r p : ℕ) : Prop :=
+  ∀ a:ℕ+, a ≤ Int.floor (Real.sqrt r)*(Real.log n) →
+  AdjoinRoot.mk (X^r -1 : (ZMod p)[X]) ((X: (ZMod p)[X]) + (C a: (ZMod p)[X]))^n =
+  AdjoinRoot.mk (X^r -1 : (ZMod p)[X]) ((X^n:(ZMod p)[X]) + (C a: (ZMod p)[X]))
+
+theorem lemma_three {R : Type u_1}{S : Type u_1}{G : Type u_1}
+  (n r : ℕ+)(h_ngone: n > 1)(h_r_less_than_n : r < n) (h_order : addOrderOf (n: ZMod r) > (Real.log n)^2)
+  (p : ℕ)(h_p_div_n: p ∣ n)(h_p_condition: p_condition n r p)
+  (h : irred_mod_p_factor_Xr p r)
+  (f g : ℤ[X]) (h_f_equiv_g : AdjoinRoot.mk (h : (ZMod p)[X]) f = g)
+  /-Is this what they mean?-/(h_reductions : AdjoinRoot.mk (h : (ZMod p)[X]) f ∈ G ∧ AdjoinRoot.mk (h : (ZMod p)[X]) g ∈ G)
+  : true := by rfl
+--f.degree < R.index ∧ g.degree < R.index → (f : (ZMod p)[X]) = g := by sorry
+
 
 /-
 Lemma 4.3
 \begin{lemma}
-   Suppose that $f(x), g(x) \in \mathbb{Z}[x]$ with $f(x) \equiv g(x) \mod (p, h(x))$ and that the reductions of $f$ and $g$ in $\mathbb{F}$ both belong to $G$. If $f$ and $g$ both have degree $< |R|$, then $f(x) equiv g(x) (\mod p)$
+   Suppose that $f(x), g(x) \in \mathbb{Z}[x]$ with $f(x) \equiv g(x) \mod (p, h(x))$
+   and that the reductions of $f$ and $g$ in $\mathbb{F}$ both belong to $G$.
+   If $f$ and $g$ both have degree $< |R|$, then $f(x) equiv g(x) (\mod p)$
 \end{lemma}
 -/
 def first_condition (n : ℕ) : Prop :=
@@ -152,15 +178,9 @@ variable (n : ℕ)
 
 variable(a : ℕ+)
 def third_condition (n r : ℕ) : Prop :=
-  ∀ a:ℕ+, a ≤ Int.floor (Real.sqrt r)*(Real.log n) → AdjoinRoot.mk (X^r -1 : (ZMod n)[X]) ((X: (ZMod n)[X]) + (C a: (ZMod n)[X]))^n = AdjoinRoot.mk (X^r -1 : (ZMod n)[X]) ((X^n:(ZMod n)[X]) + (C a: (ZMod n)[X]))
---  ∀ a:ℕ+, a ≤ Int.floor (Real.sqrt r)*(Real.log n) → (((X: (ZMod n)[X]) +  (C a: (ZMod n)[X])) : AdjoinRoot.mk (X^r -1 : (ZMod n)[X]))^n = (X^n + (C a: (ZMod n)[X]))
-
---  ∀ (a:ℕ+), ((a : ℕ) : ℤ) ≤ Int.floor ((Real.sqrt r)*(Real.log n)) → ((((X : (ZMod n)[X]) + (C (a : ZMod n) : (ZMod n)[X])):AdjoinRoot (X^r - 1 : (ZMod n)[X])))^n = (((X^n : (ZMod n)[X]) + (C (a : ZMod n) : (ZMod n)[X])) : AdjoinRoot (X^r - 1 : (ZMod n)[X]))
---   ∀ (a:ℕ+), ((a : ℕ) : ℤ) ≤ Int.floor ((Real.sqrt r)*(Real.log n)) → ((((X:(ZMod n)[X]) + (C a :(ZMod n)[X])): AdjoinRoot (X^r -1 : (ZMod n)[X])))^n = ((X^n:(ZMod n)[X]) + (C a: (ZMod n)[X]))
---  ∀ a ≤ (Real.sqrt r) * (Real.log n), ((AdjoinRoot.of (X : (ZMod n)[X]) +
---  AdjoinRoot.of (C a : (ZMod n)[X]))^n: AdjoinRoot (X^r - 1 : (ZMod n)[X])) = ((AdjoinRoot.of (X^n : (ZMod n)[X]) + AdjoinRoot.of (C a : (ZMod n)[X])): AdjoinRoot (X^r - 1 : (ZMod n)[X]))
-
---   Polynomial.mod ((X + a: (ZMod n)[X] )^n) (X^r - 1) = (X^n + a)
+  ∀ a:ℕ+, a ≤ Int.floor (Real.sqrt r)*(Real.log n) →
+  AdjoinRoot.mk (X^r -1 : (ZMod n)[X]) ((X: (ZMod n)[X]) + (C a: (ZMod n)[X]))^n =
+  AdjoinRoot.mk (X^r -1 : (ZMod n)[X]) ((X^n:(ZMod n)[X]) + (C a: (ZMod n)[X]))
 
 
 theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ+) (h_ngone: n > 1)
@@ -190,15 +210,8 @@ theorem AKS_Primality_Test {R : Type u_1} (n r : ℕ+) (h_ngone: n > 1)
         intro h_a_leq
         have name : Fact (Nat.Prime n) := {out := h}
 --        unfold AdjoinRoot.mk
-        rw[add_pow_char]
-
+        rw[add_pow_char (X + C↑↑a)^n]
         sorry
-        --uncomment when third_condition is complete:
-/-        unfold third_condition
-        intro h_three
-        have name : Fact (Nat.Prime n) := {out := h_three}
-        rw [add_pow_char]
-        simp-/
   · contrapose
     let (p: ℕ)(hp_one: p ∈ Nat.primeFactors n)(hp_two: third_condition p r)
     sorry
